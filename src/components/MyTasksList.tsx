@@ -1,10 +1,14 @@
 import React from 'react';
-import { FlatList, TouchableOpacity, View, Text, StyleSheet, FlatListProps } from 'react-native';
+import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { useTheme } from '../hooks/useTheme';
 
 function FlatListHeaderComponent() {
+
+  const { isDarkTheme } = useTheme();
+
   return (
     <View>
-      <Text style={styles.header}>Minhas tasks</Text>
+      <Text style={isDarkTheme ? styles.headerDark : styles.header}>Minhas tasks</Text>
     </View>
   )
 }
@@ -20,6 +24,9 @@ interface MyTasksListProps {
 }
 
 export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
+  
+  const { isDarkTheme } = useTheme();
+  
   return (
     <FlatList
       data={tasks}
@@ -31,14 +38,21 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
             activeOpacity={0.7}
             onLongPress={() => onLongPress(item.id)}
             onPress={() => onPress(item.id)}
-            style={item.done ? styles.taskButtonDone : styles.taskButton}
+            style={[item.done ? styles.taskButtonDone : styles.taskButton, 
+              isDarkTheme && item.done && { backgroundColor: 'rgba(255, 121, 198, 0.1)' }
+            ]}
           >
             <View 
               testID={`marker-${index}`}
-              style={item.done ? styles.taskMarkerDone : styles.taskMarker}
+              style={[item.done ? styles.taskMarkerDone : styles.taskMarker,
+                isDarkTheme ? 
+                { backgroundColor: item.done ? '#FF79C6' : null, borderColor: '#FF79C6' } : 
+                {}]}
             />
             <Text 
-              style={item.done ? styles.taskTextDone : styles.taskText}
+              style={[item.done ? styles.taskTextDone : styles.taskText,
+                isDarkTheme ? { color: '#fff' } : { },
+              ]}
             >
               {item.title}
             </Text>
@@ -51,7 +65,8 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
       }}
       style={{
         marginHorizontal: 24,
-        marginTop: 32
+        marginTop: 32,
+        
       }}
     />
   )
@@ -60,6 +75,11 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
 const styles = StyleSheet.create({
   header: {
     color: '#3D3D4D',
+    fontSize: 24,
+    fontFamily: 'Poppins-SemiBold'
+  },
+  headerDark: {
+    color: '#FF79C6',
     fontSize: 24,
     fontFamily: 'Poppins-SemiBold'
   },
